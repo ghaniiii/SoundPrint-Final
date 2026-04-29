@@ -1,0 +1,58 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--page-bg, #f3f4f6);
+  color: var(--text-color, #1f2933);
+
+  /* Light theme defaults */
+  --bg-start: #f7f7fb;
+  --bg-end: #f1f4ff;
+  --page-bg: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+  --text-color: #1f2933;
+  --card-bg: #ffffff;
+  --muted: #6b7280;
+
+  /* Accent colors */
+  --accent: #7b61ff;
+  --accent-2: #4bb0ff;
+  --btn-text: #ffffff;
+
+  /* UI helpers */
+  --placeholder-start: #dbeafe;
+  --placeholder-end: #e5e7eb;
+  --scroll-thumb: rgba(0,0,0,0.06);
+  --hover-bg: rgba(255,255,255,0.03);
+  --card-overlay: rgba(255,255,255,0.03);
+  --muted-bg: rgba(0,0,0,0.04);
+  --card-icon-bg-start: #fdf2ff;
+  --card-icon-bg-end: #e0f2fe;
+}
+
+/* Dark theme variables (applied when `body.dark` is present) */
+body.dark {
+  /* Dark theme overrides */
+  --bg-start: #06173b;
+  --bg-end: #0f1724;
+  --page-bg: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+  --text-color: #e6eef8;
+  --card-bg: #071127;
+  --muted: #8897b0;
+
+  --accent: #7b61ff;
+  --accent-2: #4bb0ff;
+  --btn-text: #ffffff;
+
+  --placeholder-start: #0f1724;
+  --placeholder-end: #071127;
+  --scroll-thumb: rgba(255,255,255,0.06);
+  --hover-bg: rgba(255,255,255,0.04);
+  --card-overlay: rgba(255,255,255,0.02);
+  --muted-bg: rgba(255,255,255,0.02);
+  --card-icon-bg-start: rgba(243,232,255,0.04);
+  --card-icon-bg-end: rgba(224,242,254,0.03);
+}

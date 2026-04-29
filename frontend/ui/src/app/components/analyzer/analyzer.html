@@ -1,0 +1,178 @@
+<section id="analyze" class="analyze">
+  <h2>Analyze Your <span class="gradient-text">Music</span></h2>
+  <p class="subtitle">
+    Upload a song and discover similar tracks based on frequency patterns.
+  </p>
+
+  <div class="grid-two">
+
+    <!-- Upload Card -->
+    <div class="card upload-card">
+      <div class="card-header">
+        <h3>Upload Audio</h3>
+        <div class="card-icon">
+          <span>♪</span>
+        </div>
+      </div>
+
+      <input #fileInput type="file" hidden accept=".mp3,.wav,.flac,.ogg,.m4a,audio/*" (change)="onFileSelected($event)" />
+
+      <!-- Before Upload -->
+      <div class="upload-empty" *ngIf="!uploadedFile">
+        <div class="drop-zone" (drop)="onDrop($event)" (dragover)="onDragOver($event)">
+          <div class="drop-inner">
+            <div class="upload-icon">⬆</div>
+            <p class="drop-main">Drop your audio file here</p>
+            <p class="hint">Supports MP3, WAV, FLAC</p>
+            <button class="btn-primary" type="button" (click)="fileInput.click()">
+              Select File
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- After Upload -->
+      <div class="upload-info" *ngIf="uploadedFile">
+        <div class="file-row">
+          <div class="file-icon">♪</div>
+          <div class="file-meta">
+            <div class="file-name">{{ uploadedFile.name }}</div>
+            <div class="file-details">
+              {{ formatFileSize(uploadedFile.size) }}
+            </div>
+          </div>
+          <button class="play-btn" (click)="toggleUpload()">
+            {{ isUploadPlaying ? '⏸' : '▶' }}
+          </button>
+        </div>
+
+        <p class="status-text" *ngIf="isAnalyzing">
+          Analyzing audio…
+        </p>
+
+        <div class="upload-actions">
+          <button class="change-file-btn" type="button" (click)="fileInput.click()">
+            Change File
+          </button>
+        </div>
+      </div>
+
+      <!-- Selection / Window (30s) -->
+      <div class="selection-area" *ngIf="audioBuffer">
+        <div class="selection-meta">
+          Duration: {{ formatDuration(durationSeconds) }}
+          • Selection: {{ formatDuration(selectionStart) }} - {{ formatDuration(selectionEnd) }}
+        </div>
+
+        <div class="selection-bar" #selectionBar
+          (click)="onBarPointerDown($event)"
+          (mousemove)="onBarPointerMove($event)"
+          (mouseup)="endDrag()"
+          (mouseleave)="endDrag()">
+          <div class="bar-track"></div>
+          <div class="selection-overlay"
+            (mousedown)="startDrag($event)"
+            [ngStyle]="{ left: (selectionStart / (durationSeconds || 1) * 100) + '%', width: (windowSize / (durationSeconds || 1) * 100) + '%' }">
+          </div>
+        </div>
+
+        <div class="selection-controls">
+          <button class="play-btn" (click)="toggleSelectionPlay()">{{ isSelectionPlaying ? '⏸' : '▶' }}</button>
+          <button class="btn-primary" (click)="confirmAndAnalyzeSelection()">Use selection (send 30s)</button>
+        </div>
+      </div>
+
+      <p class="error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </p>
+    </div>
+
+
+    <!-- Frequency Profile -->
+    <div class="card freq-card">
+      <div class="card-header">
+        <h3>Frequency Profile</h3>
+        <div class="card-icon">
+          <span>📈</span>
+        </div>
+      </div>
+
+      <div class="freq-body">
+
+        <div *ngIf="analysisResult && frequencyBins.length > 0; else placeholderChart">
+
+          <div class="bars-wrapper">
+            <div class="bars">
+              <div class="bar" *ngFor="let v of frequencyBins" [ngStyle]="{ height: (20 + v * 80) + '%' }">
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <ng-template #placeholderChart>
+          <div class="bars-wrapper">
+            <div class="bars">
+              <div class="bar placeholder" *ngFor="let _ of [].constructor(128)">
+              </div>
+            </div>
+          </div>
+        </ng-template>
+
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- Similar Tracks -->
+  <div class="card similar-card"
+    *ngIf="analysisResult && analysisResult.similarTracks && analysisResult.similarTracks.length > 0">
+
+    <div class="card-header">
+      <div>
+        <h3>Similar Tracks</h3>
+        <p class="sub">Based on frequency pattern analysis</p>
+      </div>
+      <div class="card-icon">
+        <span>📊</span>
+      </div>
+    </div>
+
+    <div class="track-list">
+      <div class="track-row" *ngFor="let t of analysisResult.similarTracks; trackBy: trackById">
+
+        <div class="track-left">
+          <div class="track-icon">♪</div>
+          <div class="track-info">
+            <div class="track-title">{{ t.title }}</div>
+            <div class="track-meta">
+              {{ t.artist || 'Unknown Artist' }}
+              •
+              {{ formatDuration(t.durationSeconds) }}
+            </div>
+          </div>
+        </div>
+
+        <div class="track-right">
+
+          <div class="match">
+            {{ ((t.matchScore_cosine ?? t.matchScore ?? 0) * 100) | number:'1.0-0' }}% Match
+            <div class="match-sub">
+              <small>eucl: {{ t.euclidean | number:'1.2-4' }} • pearson: {{ t.pearson | number:'1.2-3' }}</small>
+            </div>
+          </div>
+
+          <button class="play-btn" (click)="toggleTrack(t)">
+            {{ playingId === t.id ? '⏸' : '▶' }}
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<audio #audioPlayer hidden></audio>
