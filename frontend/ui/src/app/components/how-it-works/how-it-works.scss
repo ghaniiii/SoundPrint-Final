@@ -1,0 +1,68 @@
+.how {
+  text-align: center;
+  padding: 3rem 0 4rem;
+  scroll-margin-top: 5.5rem;
+}
+
+.accent-text {
+  color: var(--accent, #7b61ff);
+}
+
+.subtitle {
+  color: var(--muted, #6b7280);
+  max-width: 600px;
+  margin: 0.6rem auto 2.5rem;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.step-card {
+  position: relative;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.06);
+  padding: 1.5rem;
+  text-align: left;
+}
+
+.step-number {
+  position: absolute;
+  top: -12px;
+  left: 12px;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: var(--accent, #7b61ff);
+  color: var(--btn-text, #fff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.step-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: var(--icon-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+  font-size: 1.2rem;
+}
+
+.step-inner h3 {
+  margin: 0 0 0.35rem;
+}
+
+.step-inner p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted, #6b7280);
+}

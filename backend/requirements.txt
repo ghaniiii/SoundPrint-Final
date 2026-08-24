@@ -1,0 +1,24 @@
+# Backend Python dependencies for FYP project
+# Notes:
+# - Installing PyTorch may require platform-specific wheels. See https://pytorch.org/get-started/locally
+# - If you only need CPU inference, install a CPU-only torch wheel (e.g. torch==2.2.0+cpu) using the PyTorch index URL.
+
+Flask>=3.1.0
+Flask-Cors>=4.0.0
+numpy>=1.24.0
+scipy>=1.10.0
+pandas>=2.0.0
+h5py>=3.8.0
+soundfile>=0.12.1
+librosa>=0.10.0
+panns_inference
+torch>=1.13.0
+tqdm>=4.65.0
+
+# Optional / dev utilities
+python-dotenv>=1.0.0
+pytest>=7.3.0
+
+
+gunicorn>=21.2.0
+werkzeug>=2.2.0

@@ -1,0 +1,14 @@
+<section id="features" class="features">
+  <h2>Powerful <span class="accent-text">Features</span></h2>
+  <p class="subtitle">
+    Built on cutting-edge signal processing and data science principles.
+  </p>
+
+  <div class="grid">
+    <div class="feature-card" *ngFor="let f of features">
+      <div class="icon">{{ f.icon }}</div>
+      <h3>{{ f.title }}</h3>
+      <p>{{ f.description }}</p>
+    </div>
+  </div>
+</section>

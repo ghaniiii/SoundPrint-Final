@@ -1,0 +1,42 @@
+<div class="app-root">
+  <header class="top-nav">
+    <a class="brand" href="#home" (click)="scrollTo('home', $event)">
+      <span class="brand-mark">≋</span>
+      <span class="brand-name">SoundPrint</span>
+    </a>
+
+    <nav class="section-nav" aria-label="Page sections">
+      <button
+        type="button"
+        *ngFor="let item of navItems"
+        class="nav-btn"
+        [class.active]="activeSection === item.id"
+        [attr.aria-current]="activeSection === item.id ? 'true' : null"
+        (click)="scrollTo(item.id, $event)">
+        {{ item.label }}
+      </button>
+    </nav>
+
+    <button
+      class="theme-btn"
+      type="button"
+      (click)="toggleTheme()"
+      [attr.aria-label]="isDark ? 'Switch to light' : 'Switch to dark'">
+      <svg *ngIf="!isDark" class="icon moon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor" />
+      </svg>
+      <svg *ngIf="isDark" class="icon sun" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M6.76 4.84l-1.8-1.79L3.17 4.84l1.79 1.8 1.8-1.8zM1 13h3v-2H1v2zm10 9h2v-3h-2v3zm8.83-17.95l-1.79 1.8 1.8 1.79 1.8-1.8-1.81-1.79zM17.24 19.16l1.79 1.79 1.79-1.79-1.79-1.8-1.79 1.8zM22 11v2h3v-2h-3zM11 2h2v3h-2V2zm-9.9 4.66l1.79 1.79 1.8-1.79-1.8-1.8L1.1 6.66z" fill="currentColor"/>
+        <circle cx="12" cy="12" r="3" fill="currentColor" />
+      </svg>
+    </button>
+  </header>
+
+  <main>
+    <app-hero></app-hero>
+    <app-how-it-works></app-how-it-works>
+    <app-analyzer></app-analyzer>
+    <app-features></app-features>
+  </main>
+  <app-app-footer></app-app-footer>
+</div>

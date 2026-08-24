@@ -1,0 +1,17 @@
+<section id="how-it-works" class="how">
+  <h2>How <span class="accent-text">SoundPrint</span> Works</h2>
+  <p class="subtitle">
+    Our system analyzes the actual sound of music, not just metadata or user behavior.
+  </p>
+
+  <div class="steps">
+    <div class="step-card" *ngFor="let step of steps">
+      <div class="step-number">{{ step.number }}</div>
+      <div class="step-inner">
+        <div class="step-icon">{{ step.icon }}</div>
+        <h3>{{ step.title }}</h3>
+        <p>{{ step.description }}</p>
+      </div>
+    </div>
+  </div>
+</section>

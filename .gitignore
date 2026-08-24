@@ -1,0 +1,25 @@
+# Python
+backend/.venv/
+**/.venv/
+**/__pycache__/
+*.pyc
+backend/recommend_error.log
+
+# User audio
+backend/uploads/
+*.wav
+*.mp3
+*.flac
+backend/embeddings/track_embeddings_uploads_panns.npz
+
+# Node / Angular
+frontend/ui/node_modules/
+frontend/ui/.angular/
+frontend/ui/dist/
+frontend/ui/.tmp/
+npm-debug.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/

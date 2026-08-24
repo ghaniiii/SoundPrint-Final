@@ -1,0 +1,167 @@
+<section id="analyze" class="analyze">
+  <h2>Analyze Your <span class="accent-text">Music</span></h2>
+  <p class="subtitle">
+    Upload a song, pick a 30-second window, and get similar tracks from frequency patterns.
+  </p>
+
+  <div class="grid-two">
+
+    <div class="card upload-card">
+      <div class="card-header">
+        <h3>Upload Audio</h3>
+        <div class="card-icon">
+          <span>♪</span>
+        </div>
+      </div>
+
+      <input #fileInput type="file" hidden accept=".mp3,.wav,.flac,.ogg,.m4a,audio/*" (change)="onFileSelected($event)" />
+
+      <div class="upload-empty" *ngIf="!uploadedFile">
+        <div class="drop-zone" (click)="fileInput.click()" (drop)="onDrop($event)" (dragover)="onDragOver($event)">
+          <div class="drop-inner">
+            <div class="upload-icon">⬆</div>
+            <p class="drop-main">Drop your audio file here</p>
+            <p class="hint">MP3, WAV, FLAC, OGG, M4A</p>
+            <button class="btn-primary" type="button" (click)="fileInput.click(); $event.stopPropagation()">
+              Select File
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="upload-info" *ngIf="uploadedFile">
+        <div class="file-row">
+          <div class="file-icon">♪</div>
+          <div class="file-meta">
+            <div class="file-name" [title]="uploadedFile.name">{{ uploadedFile.name }}</div>
+            <div class="file-details">
+              {{ formatFileSize(uploadedFile.size) }}
+            </div>
+          </div>
+          <button class="play-btn" type="button" (click)="toggleUpload()" [attr.aria-label]="isUploadPlaying ? 'Pause' : 'Play uploaded file'">
+            {{ isUploadPlaying ? '⏸' : '▶' }}
+          </button>
+        </div>
+
+        <div class="upload-actions">
+          <button class="change-file-btn" type="button" (click)="fileInput.click()">
+            Change File
+          </button>
+        </div>
+      </div>
+
+      <div class="selection-area" *ngIf="audioBuffer">
+        <div class="selection-meta">
+          <span>Duration {{ formatDuration(durationSeconds) }}</span>
+          <span class="sel">Selected {{ formatDuration(selectionStart) }} – {{ formatDuration(selectionEnd) }}</span>
+        </div>
+        <p class="selection-hint">Drag the highlighted window to choose ~30 seconds.</p>
+
+        <div class="selection-bar" #selectionBar
+          (mousedown)="onBarPointerDown($event)">
+          <div class="bar-track"></div>
+          <div class="selection-overlay"
+            (mousedown)="startDrag($event); $event.stopPropagation()"
+            [ngStyle]="{ left: (selectionStart / (durationSeconds || 1) * 100) + '%', width: (windowSize / (durationSeconds || 1) * 100) + '%' }">
+            <span class="handle"></span>
+            <span class="handle right"></span>
+          </div>
+        </div>
+
+        <div class="selection-controls">
+          <button class="btn-ghost" type="button" (click)="toggleSelectionPlay()">
+            {{ isSelectionPlaying ? 'Pause preview' : 'Preview selection' }}
+          </button>
+          <button class="btn-primary" type="button" [disabled]="isAnalyzing" (click)="confirmAndAnalyzeSelection()">
+            {{ isAnalyzing ? 'Analyzing…' : 'Analyze 30s selection' }}
+          </button>
+        </div>
+      </div>
+
+      <p class="status-text" *ngIf="isAnalyzing">
+        Matching frequency patterns. First run can take a minute while the model loads.
+      </p>
+
+      <p class="error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </p>
+    </div>
+
+    <div class="card freq-card">
+      <div class="card-header">
+        <h3>Frequency Profile</h3>
+        <div class="card-icon">
+          <span>📈</span>
+        </div>
+      </div>
+
+      <div class="freq-body">
+        <div *ngIf="analysisResult && frequencyBins.length > 0; else placeholderChart">
+          <div class="bars-wrapper">
+            <div class="bars">
+              <div class="bar" *ngFor="let v of frequencyBins" [ngStyle]="{ height: (12 + v * 88) + '%' }"></div>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #placeholderChart>
+          <div class="bars-wrapper">
+            <div class="bars placeholder-bars">
+              <div class="bar placeholder" *ngFor="let h of placeholderHeights" [ngStyle]="{ height: h + '%' }"></div>
+            </div>
+          </div>
+          <p class="freq-empty">Upload a track to see its frequency fingerprint.</p>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <div class="card similar-card"
+    *ngIf="analysisResult && analysisResult.similarTracks && analysisResult.similarTracks.length > 0">
+
+    <div class="card-header">
+      <div>
+        <h3>Similar Tracks</h3>
+        <p class="sub">Ranked by cosine similarity of PANNs embeddings</p>
+      </div>
+      <div class="card-icon">
+        <span>📊</span>
+      </div>
+    </div>
+
+    <div class="track-list">
+      <div class="track-row" *ngFor="let t of analysisResult.similarTracks; trackBy: trackById">
+        <div class="track-left">
+          <div class="track-icon">♪</div>
+          <div class="track-info">
+            <div class="track-title" [title]="t.title">{{ t.title }}</div>
+            <div class="track-meta">
+              {{ t.artist || 'Unknown Artist' }}
+              <ng-container *ngIf="t.durationSeconds"> • {{ formatDuration(t.durationSeconds) }}</ng-container>
+            </div>
+          </div>
+        </div>
+
+        <div class="track-right">
+          <div class="match">
+            {{ ((t.matchScore_cosine ?? t.matchScore ?? 0) * 100) | number:'1.0-0' }}% match
+            <div class="match-sub" *ngIf="t.euclidean != null || t.pearson != null">
+              <small>eucl {{ t.euclidean | number:'1.2-2' }} • pearson {{ t.pearson | number:'1.2-2' }}</small>
+            </div>
+          </div>
+
+          <button
+            *ngIf="canPlay(t)"
+            class="play-btn"
+            type="button"
+            (click)="toggleTrack(t)"
+            [attr.aria-label]="playingId === t.id ? 'Pause' : 'Play'">
+            {{ playingId === t.id ? '⏸' : '▶' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<audio #audioPlayer hidden></audio>
